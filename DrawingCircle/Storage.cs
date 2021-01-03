@@ -33,8 +33,19 @@ namespace DrawingCircle
                 _n++;
             }
         }
+        public void adding(Shape b, int i)
+        {
+            if (_n >= _size)
+                change_size(_n + 1);
 
-       public Shape get_Shape(int i)
+            if (_n < _size && masShape[_n] == null)
+            {
+                masShape[i] = b;
+                _n++;
+            }
+        }
+
+        public Shape get_Shape(int i)
         {
             if ((i > -1) && (i < _size))
             {
@@ -46,7 +57,7 @@ namespace DrawingCircle
             }
         }
 
-        void change_size(int size)
+        public void change_size(int size)
         {
             {
                 Shape[] masShape1 = new Shape[_size];
@@ -60,13 +71,13 @@ namespace DrawingCircle
             }
         }
 
-        void delete_Shape(int i)
+        public void delete_Shape(int i)
         {
             if (masShape[i] != null)
             {
-                masShape[i] = default;
                 _n--;
             }
+                masShape[i] = default(Shape);
         }
         public int get_size()
         {
