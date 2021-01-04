@@ -20,6 +20,7 @@ namespace DrawingCircle
         bool ctrl_key = false;
         List<Circle> list = new List<Circle>();
         Storage<Circle> libr = new Storage<Circle>(50);
+        bool create;
         private void unmarkAll()
         {
             for (int i = 0; i < libr._size; i++)
@@ -41,92 +42,137 @@ namespace DrawingCircle
         {
             if (e.Button == MouseButtons.Left)
             {
-                Circle circle = new Circle();
-                libr.add(new Circle(e.X - 25, e.Y - 25));
-                for (int i = 0; i < libr._size; ++i)
+                if (SelectionMode_checkBox.Checked)
                 {
-                    Circle circle1 = libr.get_Shape(i);
-                    if (circle1.isCircle(e))
+                    bool flag = true;
+                    for (int i = (int)libr.get_size() - 1; i >= 0; i--)
                     {
-                        unmarkAll();
-                    }
-                    circle1.mark = (circle1.mark ? false : true);
-                    this.Invalidate();
-                    return;
-                }
-                unmarkAll();
+                        if (libr.get_Shape(i) == null)
+                            continue;
 
-                //Circle newCircle = new Circle(e.X, e.Y);
-                //libr.add(newCircle);
-                this.Invalidate();
-            }
-            
-            
-            
-            
-            //Circle circle = new Circle();
-            //libr.add(new Circle(e.X - 25, e.Y - 25));
-            //this.Invalidate();
-           /* bool flag = true;
-            if (!(e.Button == MouseButtons.Left))
-            {
-                return;
-            }
-            if (SelectionMode_checkBox.Checked)
-            {
-                for (int i = (int)libr.get_size() - 1; i >= 0; i--)
-                {
-                    if (libr.get_Shape(i) == null)
-                        continue;
-
-                    if (ctrl_key)
-                    {
-                        if (libr.get_Shape(i).isCircle(e))
+                        if (ctrl_key)
                         {
-                            libr.get_Shape(i).mark = !libr.get_Shape(i).mark;
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        if (libr.get_Shape(i).isCircle(e) && flag)
-                        {
-                            libr.get_Shape(i).mark = true;
-                            flag = false;
+                            if (libr.get_Shape(i).isCircle(e))
+                            {
+                                libr.get_Shape(i).mark = !libr.get_Shape(i).mark;
+                                break;
+                            }
                         }
                         else
                         {
-                            libr.get_Shape(i).mark = false;
+                            if (libr.get_Shape(i).isCircle(e) && flag)
+                            {
+                                libr.get_Shape(i).mark = true;
+                                flag = false;
+                            }
+                            else
+                            {
+                                libr.get_Shape(i).mark = false;
+                            }
                         }
+
                     }
-
                 }
-            }
 
-            else
-            {
-                for (int i = 0; i < libr.get_num(); i++)
+                else
                 {
-                    if (libr.get_num() == null)
+                    for (int i = 0; i < libr.get_num(); i++)
                     {
-                        continue;
+                        if (libr.get_Shape(i) == null)
+                        {
+                            continue;
+                        }
+                        libr.get_Shape(i).mark = false;
                     }
-                    libr.get_Shape(i).mark = false;
-                }
 
-                Circle cCircle = new Circle(e.X - 25, e.Y - 25);
+                    Circle cCircle = new Circle(e.X, e.Y);
 
-                if (libr.get_num() == libr.get_size())
-                {
-                    libr.change_size(libr.get_num() + 1);
+                    if (libr.get_num() == libr.get_size())
+                    {
+                        libr.change_size(libr.get_num() + 1);
+                    }
+                    libr.adding(cCircle, libr.get_num());
                 }
-                libr.adding(cCircle, libr.get_num());
+                this.Invalidate();
             }
-                this.Invalidate();*/
+
+            //Circle circle = new Circle();
+            //libr.add(new Circle(e.X - 25, e.Y - 25));
+            //this.Invalidate();
+            /* bool flag = true;
+             if (!(e.Button == MouseButtons.Left))
+             {
+                 return;
+             }
+
+             if (circle.isCircle(e))
+                     {
+                         unmarkAll();
+                     }
+                     circle.mark = (circle.mark ? true : false );
+                     this.Invalidate();
+                     return;
+
+                 unmarkAll();
+
+                 //Circle newCircle = new Circle(e.X, e.Y);
+                 //libr.add(newCircle);
+                 this.Invalidate();
+             if (SelectionMode_checkBox.Checked)
+             {
+                 for (int i = (int)libr.get_size() - 1; i >= 0; i--)
+                 {
+                     if (libr.get_Shape(i) == null)
+                         continue;
+
+                     if (ctrl_key)
+                     {
+                         if (libr.get_Shape(i).isCircle(e))
+                         {
+                             libr.get_Shape(i).mark = !libr.get_Shape(i).mark;
+                             break;
+                         }
+                     }
+                     else
+                     {
+                         if (libr.get_Shape(i).isCircle(e) && flag)
+                         {
+                             libr.get_Shape(i).mark = true;
+                             flag = false;
+                         }
+                         else
+                         {
+                             libr.get_Shape(i).mark = false;
+                         }
+                     }
+
+                 }
+             }
+
+             else
+             {
+                 for (int i = 0; i < libr.get_num(); i++)
+                 {
+                     if (libr.get_num() == null)
+                     {
+                         continue;
+                     }
+                     libr.get_Shape(i).mark = false;
+                 }
+
+                 Circle cCircle = new Circle(e.X - 25, e.Y - 25);
+
+                 if (libr.get_num() == libr.get_size())
+                 {
+                     libr.change_size(libr.get_num() + 1);
+                 }
+                 libr.adding(cCircle, libr.get_num());
+             }
+                 this.Invalidate();*/
         }
-        
-        
-    
+
+
+
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Control)
@@ -156,7 +202,7 @@ namespace DrawingCircle
             public int _radius=25;
             public int _x;
             public int _y;
-            public bool mark=false;
+            public bool mark=true;
             public Circle()
             {
             }
@@ -175,16 +221,27 @@ namespace DrawingCircle
             }
             public void Draw(PaintEventArgs e)
             {
-                if (mark == false)
+                Pen pen1 = new Pen(Brushes.Black, 2);
+                e.Graphics.DrawEllipse(
+                   pen1,
+                   this.get_x() - 25,
+                   this.get_y() - 25,
+                   25 * 2,
+                   25 * 2
+                   );
+
+                if (!mark)
                 {
-                    Pen pen = new Pen(Color.Green);
-                    e.Graphics.DrawEllipse(pen, _x, _y, _radius * 2, _radius * 2);
+                    return;
                 }
-                else
-                {
-                    Pen pen1 = new Pen(Color.Black);
-                    e.Graphics.DrawEllipse(pen1, _x, _y, _radius * 2, _radius * 2);
-                }
+                Pen pen = new Pen(Brushes.Green, 2);
+                e.Graphics.DrawEllipse(
+                        pen,
+                        this.get_x() - 25,
+                        this.get_y() - 25,
+                        25 * 2,
+                        25 * 2
+                        );
             }
             public bool isCircle(MouseEventArgs e)
             {

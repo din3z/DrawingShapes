@@ -92,6 +92,17 @@ namespace DrawingCircle
             i++;
             return masShape[i];
         }
+
+
+        public Storage(Storage<Shape> a)
+        {
+            _n = a._n;
+            _size = a._size;
+            for (int i = 0; i < _size; i++)
+            {
+                masShape[i] = a.masShape[i];
+            }
+        }
         ~Storage()
         {
             for (int i = 0; i < _size; i++)
