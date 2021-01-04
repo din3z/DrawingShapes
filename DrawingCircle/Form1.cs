@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Numerics;
 
 namespace DrawingCircle
 {
@@ -34,19 +33,16 @@ namespace DrawingCircle
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
             for (int i = 0; i < libr._size; i++)
-                if (libr.get_Shape(i) != null)
-                    libr.get_Shape(i).Draw(e);
-
+            {
+                if (libr.get_Shape(i) == null)
+                {
+                    continue;
+                }
+                libr.get_Shape(i).Draw(e);
+            }
         }
        
-        private void Form1_DoubleClick(object sender, EventArgs e)
-        {
-           
-        }
-        private void Form1_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-           
-        }
+        
 
         private void Form1_MouseClick(object sender, MouseEventArgs e)
         {
@@ -61,9 +57,9 @@ namespace DrawingCircle
                     }
                     if (libr.get_Shape(i).isCircle(e))
                     {
-                        //if (!ctrl_key)
+                        if (!ctrl_key)
                         {
-                           // unmarkAll();
+                           unmarkAll();
                         }
 
                         libr.get_Shape(i).mark = (libr.get_Shape(i).mark ? false : true);
@@ -75,7 +71,6 @@ namespace DrawingCircle
                  unmarkAll();
                  Circle newCircle = new Circle(e.X, e.Y);
                  libr.add(newCircle);
-                 
                  this.Invalidate();
              }
 
@@ -85,21 +80,26 @@ namespace DrawingCircle
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            ctrl_key = e.Control;
+            if (e.Control)
+            {
+                ctrl_key = false;
+            }
+
             if (e.KeyCode == Keys.Delete)
             {
-                for (int i = 0; i < libr.get_size(); i++)
+                for (int i = 0; i != libr.get_size(); ++i)
                 {
                     if (libr.get_Shape(i) == null)
                     {
                         continue;
                     }
-                    if (libr.get_Shape(i).mark)
+
+                    if ((libr.get_Shape(i).mark))
                     {
                         libr.delete_Shape(i);
                     }
                 }
-            this.Invalidate();
+                this.Invalidate();
             }
         }
         private void Form1_KeyUp(object sender, KeyEventArgs e)
@@ -132,29 +132,6 @@ namespace DrawingCircle
             }
             public void Draw(PaintEventArgs e)
             {
-                /*Pen pen1 = new Pen(Brushes.Black, 2);
-                e.Graphics.DrawEllipse(
-                   pen1,
-                   this.get_x() - 25,
-                   this.get_y() - 25,
-                   25 * 2,
-                   25 * 2
-                   );
-
-                if (!mark)
-                {
-                    return;
-                }
-                Pen pen = new Pen(Brushes.Green, 2);
-                e.Graphics.DrawEllipse(
-                        pen,
-                        this.get_x() - 25,
-                        this.get_y() - 25,
-                        25 * 2,
-                        25 * 2
-                        );
-                e.Graphics.FillEllipse(Brushes.White, (_x - 25), (_y - 25), 2 * 25, 2 * 25);
-                */
                 Pen pen1 = new Pen(Brushes.Black, 2);
                 Pen pen = new Pen(Brushes.Green, 2);
                 e.Graphics.DrawEllipse((mark ? pen : pen1), (_x - 25), (_y - 25), 2 * 25, 2 * 25);
@@ -164,15 +141,7 @@ namespace DrawingCircle
             {
                 return (((_x - e.X) * (_x - e.X) + (_y - e.Y) * (_y - e.Y) <= _radius * _radius));
             }
-        }
-
-     
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-      
+        }      
     }
 }
         

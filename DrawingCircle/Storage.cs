@@ -77,7 +77,7 @@ namespace DrawingCircle
             if (masShape[i] != null)
             {
                 _n--;
-                change_size(_n);
+                //change_size(_n);
             }
             masShape[i] = default(Shape);
         }
