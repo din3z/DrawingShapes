@@ -25,12 +25,13 @@ namespace DrawingCircle
         public void add(Shape b)
         {
             if (_n >= _size)
-                change_size(_n + 1);
+                change_size(_n+1);
 
-            if (_n < _size && masShape[_n] == null)
+            if (_n <= _size && masShape[_n] == null)
             {
                 masShape[_n] = b;
                 _n++;
+                change_size(_size+_n);
             }
         }
         public void adding(Shape b, int i)
@@ -38,37 +39,37 @@ namespace DrawingCircle
             if (_n >= _size)
                 change_size(_n + 1);
 
-            if (_n < _size && masShape[_n] == null)
+            if (_n <=_size && masShape[i] == null)
             {
                 masShape[i] = b;
                 _n++;
+                change_size(_size + _n);
             }
         }
 
         public Shape get_Shape(int i)
         {
-            if ((i > -1) && (i < _size))
+            if ((i < -1) || (i > _size))
+            {
+                return default(Shape);
+            }
+            else
+         
             {
                 return masShape[i];
             }
-            else
-            {
-                return default;
-            }
         }
 
-        public void change_size(int size)
+        public void change_size(int newSize)
         {
+            Shape[] masShape1 = new Shape[newSize];
+            int size = _size < newSize ? _size : newSize;
+            for (int i = 0; i < size; i++)
             {
-                Shape[] masShape1 = new Shape[_size];
-                int newsize = _size < size ? _size : size;
-                for (int i = 0; i < size; i++)
-                {
-                    masShape1[i] = masShape[i];
-                }
-                masShape = masShape1;
-                _size = newsize;
+                masShape1[i] = masShape[i];
             }
+            masShape = masShape1;
+            _size = newSize;
         }
 
         public void delete_Shape(int i)
@@ -76,8 +77,9 @@ namespace DrawingCircle
             if (masShape[i] != null)
             {
                 _n--;
+                change_size(_n);
             }
-                masShape[i] = default(Shape);
+            masShape[i] = default(Shape);
         }
         public int get_size()
         {
