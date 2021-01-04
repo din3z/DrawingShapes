@@ -82,7 +82,7 @@ namespace DrawingCircle
         {
             if (e.Control)
             {
-                ctrl_key = false;
+                ctrl_key = true;
             }
 
             if (e.KeyCode == Keys.Delete)
