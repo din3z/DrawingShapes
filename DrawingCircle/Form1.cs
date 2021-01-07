@@ -12,136 +12,194 @@ namespace DrawingCircle
 {
     public partial class Form1 : Form
     {
+        
+        Bitmap bitmap;
         public Form1()
         {
             InitializeComponent();
+            bitmap = new Bitmap(624, 384);
+            graphics = Graphics.FromImage(bitmap);
+            pictureBox1.Image = bitmap;
+
         }
+        Graphics graphics;
         bool ctrl_key = false;
-        //List<Circle> list = new List<Circle>();
-        Storage<Circle> libr = new Storage<Circle>(3);
-        //bool create;
+        Shape key;
+        Pen color;
+        Storage<Shape> libr = new Storage<Shape>(0);
+        delegate void PressKeyDelegate(Storage<Shape> shapes);
+
+        delegate void PressKeyDelegate2(int d);
+        delegate void constructor();
+
+
         private void unmarkAll()
         {
             for (int i = 0; i < libr._size; i++)
             {
                if (libr.get_Shape(i) != null)
                     libr.get_Shape(i).mark = false;
-
             }
+            
         }
 
-        private void Form1_Paint(object sender, PaintEventArgs e)
+        const int displacement = 10;
+        Dictionary<Keys, (int dx, int dy)> KeysDxDy_Dictionary = new Dictionary<Keys, (int, int)>
         {
-            for (int i = 0; i < libr._size; i++)
+            [Keys.D] = (displacement, 0),
+            [Keys.A] = (-displacement, 0),
+            [Keys.S] = (0, displacement),
+            [Keys.W] = (0, -displacement),
+        };
+        static void add(Storage<Shape> shapes)
+        {
+            for (int i = 0; i < shapes.get_size(); i++)
             {
-                if (libr.get_Shape(i) == null)
+                if (shapes.get_Shape(i) != null && shapes.get_Shape(i).mark)
                 {
-                    continue;
+                   shapes.get_Shape(i).resizeOn(1);
                 }
-                libr.get_Shape(i).Draw(e);
             }
         }
-       
-        
-
-        private void Form1_MouseClick(object sender, MouseEventArgs e)
+        static void sub(Storage<Shape> shapes)
         {
-            if (e.Button == MouseButtons.Left)
-             {
-                 for (int i = 0; i != libr.get_size(); ++i)
-                 {
-                    //libr.get_Shape(i);
-                    if (libr.get_Shape(i) == null)
-                    {
-                        continue;
-                    }
-                    if (libr.get_Shape(i).isCircle(e))
-                    {
-                        if (!ctrl_key)
-                        {
-                           unmarkAll();
-                        }
-
-                        libr.get_Shape(i).mark = (libr.get_Shape(i).mark ? false : true);
-                        this.Invalidate();
-                        return;
-                    }
-
+            for (int i = 0; i < shapes.get_size(); i++)
+            {
+                if (shapes.get_Shape(i) != null && shapes.get_Shape(i).mark)
+                {
+                    shapes.get_Shape(i).resizeOn(-1);
                 }
-                 unmarkAll();
-                 Circle newCircle = new Circle(e.X, e.Y);
-                 libr.add(newCircle);
-                 this.Invalidate();
-             }
-
+            }
         }
-
-
+        static void del(Storage<Shape> shapes)
+        {
+            for (int i = 0; i < shapes.get_size(); i++)
+            {
+                if (shapes.get_Shape(i) != null && shapes.get_Shape(i).mark)
+                {
+                    shapes.delete_Shape(i);
+                }
+            }
+        }
+        Dictionary<Keys, PressKeyDelegate> KeyDelegate_Dictionary = new Dictionary<Keys, PressKeyDelegate>
+        {
+            [Keys.L] = add,
+            [Keys.R] = sub,
+            [Keys.Delete] = del
+        };
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control)
-            {
-                ctrl_key = true;
-            }
+            ctrl_key = e.Control;
+            Keys key = e.KeyCode;
 
-            if (e.KeyCode == Keys.Delete)
+            if (KeysDxDy_Dictionary.TryGetValue(key, out (int dx, int dy) displacement))
             {
-                for (int i = 0; i != libr.get_size(); ++i)
+                for (int i = 0; i < libr.get_size(); i++)
                 {
-                    if (libr.get_Shape(i) == null)
-                    {
-                        continue;
-                    }
 
-                    if ((libr.get_Shape(i).mark))
+                    if (libr.get_Shape(i) != null && libr.get_Shape(i).mark)
                     {
-                        libr.delete_Shape(i);
+                        libr.get_Shape(i).MoveOn(
+                            displacement.dx, displacement.dy,
+                            pictureBox1.Width,
+                            0,
+                            pictureBox1.Height,
+                            0);
                     }
                 }
-                this.Invalidate();
             }
+
+            if (KeyDelegate_Dictionary.TryGetValue(key, out PressKeyDelegate handler))
+            {
+                handler(libr);
+            }
+
+            pictureBox1.Invalidate();
         }
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
             ctrl_key = false;
         }
 
-        public class Circle
+        private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
         {
-            public int _radius=25;
-            public int _x;
-            public int _y;
-            public bool mark=true;
-            public Circle()
+          
+            if (e.Button == MouseButtons.Left)
             {
+                 for (int i = 0; i != libr.get_size(); ++i)
+                 {
+                    
+                     if (libr.get_Shape(i) == null)
+                     {
+                         continue;
+                     }
+                     if (libr.get_Shape(i).isIn(e.X, e.Y))
+                     {
+                         if (!ctrl_key)
+                         {
+                             unmarkAll();
+                            //break;
+                         }
+                         libr.get_Shape(i).mark = !libr.get_Shape(i).mark;
+                         pictureBox1.Invalidate();
+                     
+                         return;
+                      
+                     }
 
+                 }
+                unmarkAll();
+                if ((string)comboColor.SelectedItem == "зеленый")
+                {
+                    color = new Pen(Color.Green);
+                }
+                if ((string)comboColor.SelectedItem == "красный")
+                {
+                    color = new Pen(Color.Red);
+                }
+                if ((string)comboColor.SelectedItem == "синий")
+                {
+                    color = new Pen(Color.Blue);
+                }
+                if ((string)comboShape.SelectedItem == "круг")
+                {
+                    key = new Circle(e.X, e.Y, color);
+                }
+                if ((string)comboShape.SelectedItem == "квадрат")
+                {
+                    key = new Square(e.X, e.Y, color);
+                }
+                if ((string)comboShape.SelectedItem == "треугольник")
+                {
+                    key = new Triangle(e.X, e.Y, color);
+                }
+
+                libr.add(key);
+                pictureBox1.Invalidate();
+               
             }
-            public Circle( int x, int y)
+
+        }
+
+        private void pictureBox1_Paint(object sender, PaintEventArgs e)
+        {
+            graphics.Clear(Color.White);
+            for (int i = 0; i < libr._size; i++)
             {
-                _x = x;
-                _y = y;
+                if (libr.get_Shape(i) != null)
+                {
+                    libr.get_Shape(i).Draw(graphics);
+                }
+                pictureBox1.Image = bitmap;
             }
-            public int get_x()
-            {
-                return _x;
-            }
-            public int get_y()
-            {
-                return _y;
-            }
-            public void Draw(PaintEventArgs e)
-            {
-                Pen pen1 = new Pen(Brushes.Black, 2);
-                Pen pen = new Pen(Brushes.Green, 2);
-                e.Graphics.DrawEllipse((mark ? pen : pen1), (_x - 25), (_y - 25), 2 * 25, 2 * 25);
-                e.Graphics.FillEllipse(Brushes.White, (_x - 25), (_y - 25), 2 * 25, 2 * 25);
-            }
-            public bool isCircle(MouseEventArgs e)
-            {
-                return (((_x - e.X) * (_x - e.X) + (_y - e.Y) * (_y - e.Y) <= _radius * _radius));
-            }
-        }      
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            
+        }
+
     }
 }
         
