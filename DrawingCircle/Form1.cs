@@ -17,7 +17,7 @@ namespace DrawingCircle
         public Form1()
         {
             InitializeComponent();
-            bitmap = new Bitmap(624, 384);
+            bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             graphics = Graphics.FromImage(bitmap);
             pictureBox1.Image = bitmap;
 
@@ -83,8 +83,8 @@ namespace DrawingCircle
         }
         Dictionary<Keys, PressKeyDelegate> KeyDelegate_Dictionary = new Dictionary<Keys, PressKeyDelegate>
         {
-            [Keys.L] = add,
-            [Keys.R] = sub,
+            [Keys.Q] = add,
+            [Keys.E] = sub,
             [Keys.Delete] = del
         };
 
@@ -199,7 +199,7 @@ namespace DrawingCircle
         {
             
         }
-
+       
     }
 }
         
