@@ -7,26 +7,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Numerics;
 
 namespace DrawingCircle
 {
     public partial class Form1 : Form
     {
         
-        Bitmap bitmap;
         public Form1()
         {
             InitializeComponent();
-            bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
-            graphics = Graphics.FromImage(bitmap);
-            pictureBox1.Image = bitmap;
+           
 
         }
-        Graphics graphics;
+       
         bool ctrl_key = false;
         Shape key;
         Pen color;
-        Storage<Shape> libr = new Storage<Shape>(0);
+        Storage<Shape> libr = new Storage<Shape>(2);
+
         delegate void PressKeyDelegate(Storage<Shape> shapes);
 
         delegate void PressKeyDelegate2(int d);
@@ -43,21 +42,23 @@ namespace DrawingCircle
             
         }
 
-        const int displacement = 10;
+        const int delta = 5;
         Dictionary<Keys, (int dx, int dy)> KeysDxDy_Dictionary = new Dictionary<Keys, (int, int)>
         {
-            [Keys.D] = (displacement, 0),
-            [Keys.A] = (-displacement, 0),
-            [Keys.S] = (0, displacement),
-            [Keys.W] = (0, -displacement),
+            [Keys.D] = (delta, 0),
+            [Keys.A] = (-delta, 0),
+            [Keys.S] = (0, delta),
+            [Keys.W] = (0, -delta),
         };
-        static void add(Storage<Shape> shapes)
+
+
+       /* static void add(Storage<Shape> shapes)
         {
             for (int i = 0; i < shapes.get_size(); i++)
             {
                 if (shapes.get_Shape(i) != null && shapes.get_Shape(i).mark)
                 {
-                   shapes.get_Shape(i).resizeOn(1);
+                   shapes.get_Shape(i).resize(1);
                 }
             }
         }
@@ -67,10 +68,10 @@ namespace DrawingCircle
             {
                 if (shapes.get_Shape(i) != null && shapes.get_Shape(i).mark)
                 {
-                    shapes.get_Shape(i).resizeOn(-1);
+                    shapes.get_Shape(i).resize(-1);
                 }
             }
-        }
+        }*/
         static void del(Storage<Shape> shapes)
         {
             for (int i = 0; i < shapes.get_size(); i++)
@@ -81,39 +82,59 @@ namespace DrawingCircle
                 }
             }
         }
-        Dictionary<Keys, PressKeyDelegate> KeyDelegate_Dictionary = new Dictionary<Keys, PressKeyDelegate>
+
+      /*  Dictionary<Keys, PressKeyDelegate> KeyDelegate_Dictionary = new Dictionary<Keys, PressKeyDelegate>
         {
             [Keys.Q] = add,
             [Keys.E] = sub,
             [Keys.Delete] = del
-        };
+        };*/
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             ctrl_key = e.Control;
-            Keys key = e.KeyCode;
+            //Keys key = e.KeyCode;
+            int dx=0, dy=0;
+            int res = 0;
+            if (e.KeyCode == Keys.E)
+                res++;
+            else if (e.KeyCode == Keys.Q)
+                res--;
 
-            if (KeysDxDy_Dictionary.TryGetValue(key, out (int dx, int dy) displacement))
+            if (e.KeyCode == Keys.S)
+                dy=dy+10;
+            if (e.KeyCode == Keys.W)
+                dy=dy-10;
+            if (e.KeyCode == Keys.D)
+                dx=dx+10;
+            if (e.KeyCode == Keys.A)
+                dx=dx-10;
+
+            for (int i = 0; i< libr.get_size(); i++)
             {
-                for (int i = 0; i < libr.get_size(); i++)
+                if (libr.get_Shape(i) != null && libr.get_Shape(i).mark)
                 {
-
-                    if (libr.get_Shape(i) != null && libr.get_Shape(i).mark)
+                    if (res != 0)
                     {
-                        libr.get_Shape(i).MoveOn(
-                            displacement.dx, displacement.dy,
-                            pictureBox1.Width,
-                            0,
-                            pictureBox1.Height,
-                            0);
+                        libr.get_Shape(i).resize(res, pictureBox1.Width, 0, pictureBox1.Height, 0);
+                       
                     }
+                    libr.get_Shape(i).MoveOn(
+                        dx, dy,
+                        pictureBox1.Width,
+                        0,
+                        pictureBox1.Height,
+                        0);
+                    
                 }
             }
-
-            if (KeyDelegate_Dictionary.TryGetValue(key, out PressKeyDelegate handler))
+            if (e.KeyCode == Keys.Delete)
             {
-                handler(libr);
+                del(libr);
             }
+            ctrl_key = e.Control;
+
+            
 
             pictureBox1.Invalidate();
         }
@@ -124,10 +145,10 @@ namespace DrawingCircle
 
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
         {
-          
+            
             if (e.Button == MouseButtons.Left)
             {
-                 for (int i = 0; i != libr.get_size(); ++i)
+                 for (int i = libr.get_size()-1; i >-1; i--)
                  {
                     
                      if (libr.get_Shape(i) == null)
@@ -139,15 +160,11 @@ namespace DrawingCircle
                          if (!ctrl_key)
                          {
                              unmarkAll();
-                            //break;
                          }
                          libr.get_Shape(i).mark = !libr.get_Shape(i).mark;
-                         pictureBox1.Invalidate();
-                     
-                         return;
-                      
+                         pictureBox1.Invalidate();                     
+                         return;                      
                      }
-
                  }
                 unmarkAll();
                 if ((string)comboColor.SelectedItem == "зеленый")
@@ -164,41 +181,42 @@ namespace DrawingCircle
                 }
                 if ((string)comboShape.SelectedItem == "круг")
                 {
-                    key = new Circle(e.X, e.Y, color);
+                    key = new Circle(e.X, e.Y, color, 50);
                 }
                 if ((string)comboShape.SelectedItem == "квадрат")
                 {
-                    key = new Square(e.X, e.Y, color);
+                    key = new Square(e.X, e.Y, color, 50);
                 }
                 if ((string)comboShape.SelectedItem == "треугольник")
                 {
-                    key = new Triangle(e.X, e.Y, color);
+                    key = new Triangle(e.X, e.Y, color, 60);
                 }
-
+              
                 libr.add(key);
                 pictureBox1.Invalidate();
                
             }
-
         }
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
-            graphics.Clear(Color.White);
-            for (int i = 0; i < libr._size; i++)
+
+            for (int i = 0; i < libr.get_size(); i++)
             {
-                if (libr.get_Shape(i) != null)
+                if (libr.get_Shape(i) != null && !libr.get_Shape(i).mark)
                 {
-                    libr.get_Shape(i).Draw(graphics);
+                    libr.get_Shape(i).Draw(e.Graphics);
                 }
-                pictureBox1.Image = bitmap;
+            }
+            for (int i = 0; i < libr.get_size(); i++)
+            {
+                if (libr.get_Shape(i) != null && libr.get_Shape(i).mark)
+                {
+                    libr.get_Shape(i).Draw(e.Graphics);
+                }
             }
         }
 
-        private void Form1_Paint(object sender, PaintEventArgs e)
-        {
-            
-        }
        
     }
 }
