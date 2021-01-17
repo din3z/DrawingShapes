@@ -26,11 +26,11 @@ namespace DrawingCircle
         Pen color;
         Storage<Shape> libr = new Storage<Shape>(2);
 
-        delegate void PressKeyDelegate(Storage<Shape> shapes);
+        /*delegate void PressKeyDelegate(Storage<Shape> shapes);
 
         delegate void PressKeyDelegate2(int d);
         delegate void constructor();
-
+        */
 
         private void unmarkAll()
         {
@@ -43,35 +43,35 @@ namespace DrawingCircle
         }
 
         const int delta = 5;
-        Dictionary<Keys, (int dx, int dy)> KeysDxDy_Dictionary = new Dictionary<Keys, (int, int)>
+        /* Dictionary<Keys, (int dx, int dy)> KeysDxDy_Dictionary = new Dictionary<Keys, (int, int)>
         {
             [Keys.D] = (delta, 0),
             [Keys.A] = (-delta, 0),
             [Keys.S] = (0, delta),
             [Keys.W] = (0, -delta),
-        };
+        };*/
 
 
-       /* static void add(Storage<Shape> shapes)
+       public void add(Storage<Shape> shapes)
         {
             for (int i = 0; i < shapes.get_size(); i++)
             {
                 if (shapes.get_Shape(i) != null && shapes.get_Shape(i).mark)
                 {
-                   shapes.get_Shape(i).resize(1);
+                   shapes.get_Shape(i).resize(1, pictureBox1.Width, 0, pictureBox1.Height, 0);
                 }
             }
         }
-        static void sub(Storage<Shape> shapes)
+        public void sub(Storage<Shape> shapes)
         {
             for (int i = 0; i < shapes.get_size(); i++)
             {
                 if (shapes.get_Shape(i) != null && shapes.get_Shape(i).mark)
                 {
-                    shapes.get_Shape(i).resize(-1);
+                    shapes.get_Shape(i).resize(-1, pictureBox1.Width, 0, pictureBox1.Height, 0);
                 }
             }
-        }*/
+        }
         static void del(Storage<Shape> shapes)
         {
             for (int i = 0; i < shapes.get_size(); i++)
@@ -95,11 +95,11 @@ namespace DrawingCircle
             ctrl_key = e.Control;
             //Keys key = e.KeyCode;
             int dx=0, dy=0;
-            int res = 0;
+            //int res = 0;
             if (e.KeyCode == Keys.E)
-                res++;
+                add(libr);
             else if (e.KeyCode == Keys.Q)
-                res--;
+                sub(libr);
 
             if (e.KeyCode == Keys.S)
                 dy=dy+10;
@@ -113,12 +113,7 @@ namespace DrawingCircle
             for (int i = 0; i< libr.get_size(); i++)
             {
                 if (libr.get_Shape(i) != null && libr.get_Shape(i).mark)
-                {
-                    if (res != 0)
-                    {
-                        libr.get_Shape(i).resize(res, pictureBox1.Width, 0, pictureBox1.Height, 0);
-                       
-                    }
+                {                   
                     libr.get_Shape(i).MoveOn(
                         dx, dy,
                         pictureBox1.Width,
@@ -132,16 +127,15 @@ namespace DrawingCircle
             {
                 del(libr);
             }
-            ctrl_key = e.Control;
-
-            
-
+            ctrl_key = e.Control;        
             pictureBox1.Invalidate();
         }
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
             ctrl_key = false;
         }
+
+       
 
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
         {
@@ -167,18 +161,8 @@ namespace DrawingCircle
                      }
                  }
                 unmarkAll();
-                if ((string)comboColor.SelectedItem == "зеленый")
-                {
-                    color = new Pen(Color.Green);
-                }
-                if ((string)comboColor.SelectedItem == "красный")
-                {
-                    color = new Pen(Color.Red);
-                }
-                if ((string)comboColor.SelectedItem == "синий")
-                {
-                    color = new Pen(Color.Blue);
-                }
+                set_color();
+
                 if ((string)comboShape.SelectedItem == "круг")
                 {
                     key = new Circle(e.X, e.Y, color, 50);
@@ -191,10 +175,9 @@ namespace DrawingCircle
                 {
                     key = new Triangle(e.X, e.Y, color, 60);
                 }
-              
+                
                 libr.add(key);
-                pictureBox1.Invalidate();
-               
+                pictureBox1.Invalidate();               
             }
         }
 
@@ -203,21 +186,37 @@ namespace DrawingCircle
 
             for (int i = 0; i < libr.get_size(); i++)
             {
-                if (libr.get_Shape(i) != null && !libr.get_Shape(i).mark)
+                if (libr.get_Shape(i) != null && (!libr.get_Shape(i).mark || libr.get_Shape(i).mark))
                 {
                     libr.get_Shape(i).Draw(e.Graphics);
                 }
             }
-            for (int i = 0; i < libr.get_size(); i++)
+           /* for (int i = 0; i < libr.get_size(); i++)
             {
                 if (libr.get_Shape(i) != null && libr.get_Shape(i).mark)
                 {
                     libr.get_Shape(i).Draw(e.Graphics);
                 }
+            }*/
+        }
+
+        public void set_color()
+        {
+            if ((string)comboColor.SelectedItem == "зеленый")
+            {
+                color = new Pen(Color.Green);
+            }
+            if ((string)comboColor.SelectedItem == "красный")
+            {
+                color = new Pen(Color.Red);
+            }
+            if ((string)comboColor.SelectedItem == "синий")
+            {
+                color = new Pen(Color.Blue);
             }
         }
 
-       
+        
     }
 }
         
