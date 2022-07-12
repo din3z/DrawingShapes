@@ -93,12 +93,12 @@ namespace DrawingCircle
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             ctrl_key = e.Control;
-            //Keys key = e.KeyCode;
+            Keys key = e.KeyCode;
             int dx=0, dy=0;
             //int res = 0;
-            if (e.KeyCode == Keys.E)
+            if (key == Keys.E)
                 add(libr);
-            else if (e.KeyCode == Keys.Q)
+            if (e.KeyCode == Keys.Q)
                 sub(libr);
 
             if (e.KeyCode == Keys.S)
@@ -135,7 +135,9 @@ namespace DrawingCircle
             ctrl_key = false;
         }
 
-       
+        public virtual Shape create_Shape(string code, int x, int y, Pen color) { return null; }
+
+
 
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
         {
@@ -161,21 +163,24 @@ namespace DrawingCircle
                      }
                  }
                 unmarkAll();
-                set_color();
-
+                if (comboColor.Text== ""){
+                    MessageBox.Show("введите все поля");
+                    return;
+                }
+                color = new Pen(Color.FromName((string)comboColor.SelectedItem));
                 if ((string)comboShape.SelectedItem == "круг")
                 {
-                    key = new Circle(e.X, e.Y, color, 50);
+                    key = new Circle(e.X, e.Y, color);
                 }
-                if ((string)comboShape.SelectedItem == "квадрат")
+                else if ((string)comboShape.SelectedItem == "квадрат")
                 {
-                    key = new Square(e.X, e.Y, color, 50);
+                    key = new Square(e.X, e.Y, color);
                 }
-                if ((string)comboShape.SelectedItem == "треугольник")
+                else if ((string)comboShape.SelectedItem == "треугольник")
                 {
-                    key = new Triangle(e.X, e.Y, color, 60);
+                    key = new Triangle(e.X, e.Y, color);
                 }
-                
+
                 libr.add(key);
                 pictureBox1.Invalidate();               
             }
@@ -186,37 +191,19 @@ namespace DrawingCircle
 
             for (int i = 0; i < libr.get_size(); i++)
             {
-                if (libr.get_Shape(i) != null && (!libr.get_Shape(i).mark || libr.get_Shape(i).mark))
+                if (libr.get_Shape(i) != null && (!libr.get_Shape(i).mark/* || libr.get_Shape(i).mark*/))
                 {
                     libr.get_Shape(i).Draw(e.Graphics);
                 }
             }
-           /* for (int i = 0; i < libr.get_size(); i++)
+           for (int i = 0; i < libr.get_size(); i++)
             {
                 if (libr.get_Shape(i) != null && libr.get_Shape(i).mark)
                 {
                     libr.get_Shape(i).Draw(e.Graphics);
                 }
-            }*/
-        }
-
-        public void set_color()
-        {
-            if ((string)comboColor.SelectedItem == "зеленый")
-            {
-                color = new Pen(Color.Green);
             }
-            if ((string)comboColor.SelectedItem == "красный")
-            {
-                color = new Pen(Color.Red);
-            }
-            if ((string)comboColor.SelectedItem == "синий")
-            {
-                color = new Pen(Color.Blue);
-            }
-        }
-
-        
+        }             
     }
 }
         
